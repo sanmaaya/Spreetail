@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
     // Fetch existing users
     const existingUsers = await db.select().from(users);
-    existingUsers.forEach((u) => {
+    existingUsers.forEach((u: any) => {
       userMap.set(u.name.toLowerCase(), u.id);
     });
 
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       .select()
       .from(groupMemberships)
       .where(eq(groupMemberships.groupId, groupId));
-    const memberUserIds = new Set(existingMemberships.map((m) => m.userId));
+    const memberUserIds = new Set(existingMemberships.map((m: any) => m.userId));
 
     for (const [nameKey, userId] of userMap.entries()) {
       if (!memberUserIds.has(userId)) {
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
     // However, since we might have foreign keys, delete in reverse order.
     // Clear expense_items first
     const groupExpenses = await db.select({ id: expenses.id }).from(expenses).where(eq(expenses.groupId, groupId));
-    const groupExpenseIds = groupExpenses.map((e) => e.id);
+    const groupExpenseIds = groupExpenses.map((e: any) => e.id);
     
     if (groupExpenseIds.length > 0) {
       for (const expId of groupExpenseIds) {
@@ -172,7 +172,7 @@ export async function POST(req: Request) {
 
           // If percentages sum doesn't match 100, normalize it
           participants.forEach((pId) => {
-            const userName = existingUsers.find((u) => u.id === pId)?.name.toLowerCase() || "";
+            const userName = existingUsers.find((u: any) => u.id === pId)?.name.toLowerCase() || "";
             let pct = percentagesMap.get(userName) || 0;
             if (sumPercentages > 0 && Math.abs(sumPercentages - 100) > 0.1) {
               pct = (pct / sumPercentages) * 100;
@@ -197,7 +197,7 @@ export async function POST(req: Request) {
           if (row.splitType === "share") {
             // "share" split type means proportional allocation based on share coefficient (e.g. Aisha 2 shares, Rohan 1 share)
             participants.forEach((pId) => {
-              const userName = existingUsers.find((u) => u.id === pId)?.name.toLowerCase() || "";
+              const userName = existingUsers.find((u: any) => u.id === pId)?.name.toLowerCase() || "";
               const coeff = sharesMap.get(userName) || 1;
               const share = (row.amountInINR * coeff) / (totalShares || 1);
               shares.push({ userId: pId, share });
@@ -205,7 +205,7 @@ export async function POST(req: Request) {
           } else {
             // "unequal" split type means direct amounts
             participants.forEach((pId) => {
-              const userName = existingUsers.find((u) => u.id === pId)?.name.toLowerCase() || "";
+              const userName = existingUsers.find((u: any) => u.id === pId)?.name.toLowerCase() || "";
               // Unequal matches names or indices. We match names.
               // Note: Swiggy or cylinder split might be here.
               const amt = sharesMap.get(userName) || 0;

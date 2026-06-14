@@ -173,7 +173,7 @@ async function main() {
 
   const userMap = new Map<string, number>();
   const existingUsers = await db.select().from(users);
-  existingUsers.forEach((u) => {
+  existingUsers.forEach((u: any) => {
     userMap.set(u.name.toLowerCase(), u.id);
   });
 
@@ -199,7 +199,7 @@ async function main() {
     .select()
     .from(groupMemberships)
     .where(eq(groupMemberships.groupId, groupId));
-  const memberUserIds = new Set(existingMemberships.map((m) => m.userId));
+  const memberUserIds = new Set(existingMemberships.map((m: any) => m.userId));
 
   for (const [nameKey, userId] of userMap.entries()) {
     if (!memberUserIds.has(userId)) {
@@ -225,7 +225,7 @@ async function main() {
   // 7. Clear old expenses and settlements for this group
   console.log("Cleaning up previous data for Flat 4B Roommates...");
   const groupExpenses = await db.select({ id: expenses.id }).from(expenses).where(eq(expenses.groupId, groupId));
-  const groupExpenseIds = groupExpenses.map((e) => e.id);
+  const groupExpenseIds = groupExpenses.map((e: any) => e.id);
   
   if (groupExpenseIds.length > 0) {
     for (const expId of groupExpenseIds) {
@@ -292,7 +292,7 @@ async function main() {
         });
 
         participants.forEach((pId: number) => {
-          const dbUser = existingUsers.find((u) => u.id === pId) || { name: "" };
+          const dbUser = existingUsers.find((u: any) => u.id === pId) || { name: "" };
           const userName = dbUser.name.toLowerCase() || "";
           let pct = percentagesMap.get(userName) || 0;
           if (sumPercentages > 0 && Math.abs(sumPercentages - 100) > 0.1) {
@@ -316,7 +316,7 @@ async function main() {
 
         if (row.splitType === "share") {
           participants.forEach((pId: number) => {
-            const dbUser = existingUsers.find((u) => u.id === pId) || { name: "" };
+            const dbUser = existingUsers.find((u: any) => u.id === pId) || { name: "" };
             const userName = dbUser.name.toLowerCase() || "";
             const coeff = sharesMap.get(userName) || 1;
             const share = (row.amountInINR * coeff) / (totalShares || 1);
@@ -324,7 +324,7 @@ async function main() {
           });
         } else {
           participants.forEach((pId: number) => {
-            const dbUser = existingUsers.find((u) => u.id === pId) || { name: "" };
+            const dbUser = existingUsers.find((u: any) => u.id === pId) || { name: "" };
             const userName = dbUser.name.toLowerCase() || "";
             const amt = sharesMap.get(userName) || 0;
             shares.push({ userId: pId, share: amt });

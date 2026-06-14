@@ -36,14 +36,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
       .innerJoin(groupMemberships, eq(users.id, groupMemberships.userId))
       .where(eq(groupMemberships.groupId, groupId));
 
-    const memberIds = members.map((m) => m.id);
+    const memberIds = members.map((m: any) => m.id);
     if (memberIds.length === 0) {
       return NextResponse.json({ members: [], balances: [], settlements: [], breakdown: {} });
     }
 
     // Initialize balance structures
     const balancesMap = new Map<number, UserBalance>();
-    members.forEach((m) => {
+    members.forEach((m: any) => {
       balancesMap.set(m.id, {
         id: m.id,
         name: m.name,
@@ -62,7 +62,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
       .from(expenses)
       .where(eq(expenses.groupId, groupId));
 
-    const expenseIds = groupExpenses.map((e) => e.id);
+    const expenseIds = groupExpenses.map((e: any) => e.id);
 
     // Fetch all expense items (shares)
     const shares = expenseIds.length > 0 
@@ -70,7 +70,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
       : [];
 
     // Aggregate paid amounts for expenses
-    groupExpenses.forEach((exp) => {
+    groupExpenses.forEach((exp: any) => {
       const payerId = exp.createdBy;
       if (balancesMap.has(payerId)) {
         const bal = balancesMap.get(payerId)!;
@@ -79,7 +79,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
     });
 
     // Aggregate share amounts for expenses
-    shares.forEach((share) => {
+    shares.forEach((share: any) => {
       const uId = share.userId;
       if (balancesMap.has(uId)) {
         const bal = balancesMap.get(uId)!;
@@ -98,7 +98,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
         )
       );
 
-    groupSettlements.forEach((set) => {
+    groupSettlements.forEach((set: any) => {
       const fromId = set.fromUserId;
       const toId = set.toUserId;
       const amt = Number(set.amount);
@@ -171,11 +171,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
       settlements: { description: string; date: string; type: "paid" | "received"; amount: number }[];
     }> = {};
 
-    members.forEach((m) => {
+    members.forEach((m: any) => {
       detailedBreakdowns[m.id] = { expenses: [], settlements: [] };
     });
 
-    groupExpenses.forEach((exp) => {
+    groupExpenses.forEach((exp: any) => {
       const expDate = exp.createdAt.toISOString().split("T")[0];
       const amt = Number(exp.amount);
       const payerId = exp.createdBy;
@@ -191,8 +191,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
       }
 
       // Participant entry
-      const expShares = shares.filter((s) => s.expenseId === exp.id);
-      expShares.forEach((share) => {
+      const expShares = shares.filter((s: any) => s.expenseId === exp.id);
+      expShares.forEach((share: any) => {
         if (detailedBreakdowns[share.userId]) {
           detailedBreakdowns[share.userId].expenses.push({
             description: `Share of: ${exp.description}`,
@@ -204,7 +204,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ groupId:
       });
     });
 
-    groupSettlements.forEach((set) => {
+    groupSettlements.forEach((set: any) => {
       const setDate = set.createdAt.toISOString().split("T")[0];
       const amt = Number(set.amount);
 
