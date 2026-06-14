@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spreetail - Shared Expenses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #09090b;
+            color: #f4f4f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            border-bottom: 1px solid #27272a;
+            background-color: #09090b;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f4f4f5;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-link {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #f4f4f5;
+            background-color: #27272a;
+        }
+        main {
+            flex: 1;
+            padding: 40px 0;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background-color: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #27272a;
+            padding-bottom: 10px;
+            color: #ffffff;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+        label {
+            font-size: 12px;
+            color: #a1a1aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input, select {
+            background-color: #09090b;
+            border: 1px solid #27272a;
+            color: #f4f4f5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #52525b;
+        }
+        button {
+            background-color: #f4f4f5;
+            color: #09090b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #e4e4e7;
+        }
+        button.secondary {
+            background-color: transparent;
+            color: #a1a1aa;
+            border: 1px solid #27272a;
+        }
+        button.secondary:hover {
+            color: #f4f4f5;
+            background-color: #27272a;
+        }
+        .btn-group {
+            align-self: flex-end;
+            display: flex;
+            gap: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            color: #a1a1aa;
+            font-weight: 500;
+            padding: 12px 16px;
+            border-bottom: 1px solid #27272a;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #18181b;
+            color: #e4e4e7;
+        }
+        tr.clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        tr.clickable-row:hover {
+            background-color: #27272a;
+        }
+        tr.active-row {
+            background-color: #27272a;
+        }
+        .detail-row {
+            background-color: #121214;
+        }
+        .detail-cell {
+            padding: 16px 24px;
+            border-bottom: 1px solid #27272a;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .detail-section-title {
+            font-weight: 500;
+            color: #a1a1aa;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .detail-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .detail-list li {
+            padding: 4px 0;
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            justify-content: space-between;
+        }
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            background-color: #27272a;
+            color: #a1a1aa;
+            text-transform: uppercase;
+        }
+        .badge.warning {
+            background-color: #7f1d1d;
+            color: #fca5a5;
+        }
+        .badge.info {
+            background-color: #1e3a8a;
+            color: #93c5fd;
+        }
+        .balance-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #27272a;
+            align-items: center;
+        }
+        .balance-item:last-child {
+            border-bottom: none;
+        }
+        .balance-name {
+            font-weight: 500;
+        }
+        .balance-val {
+            font-weight: 700;
+        }
+        .positive {
+            color: #10b981;
+        }
+        .negative {
+            color: #ef4444;
+        }
+        .gray {
+            color: #a1a1aa;
+        }
+        .hidden {
+            display: none;
+        }
+        .import-section {
+            margin-top: 20px;
+        }
+        .file-upload {
+            border: 2px dashed #27272a;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+        .file-upload:hover {
+            border-color: #52525b;
+        }
+        .file-upload input {
+            display: none;
+        }
+        .error-log {
+            background-color: #09090b;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        .error-log-item {
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #18181b;
+        }
+        .error-log-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #27272a;
+            border: 1px solid #3f3f46;
+            color: #f4f4f5;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+        .divider {
+            height: 1px;
+            background-color: #27272a;
+            margin: 24px 0;
+        }
+        .conflict-box {
+            border-left: 3px solid #f59e0b;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">Spreetail</a>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" onclick="switchTab('expenses-tab', this)">Expenses</a>
+                <a href="#" class="nav-link" onclick="switchTab('balances-tab', this)">Balances</a>
+                <a href="#" class="nav-link" onclick="switchTab('importer-tab', this)">Import Data</a>
+            </div>
+            <div>
+                <span id="user-display" style="font-size: 13px; color: #a1a1aa; margin-right: 15px;">Aisha (Demo)</span>
+                <button class="secondary" style="padding: 4px 10px; font-size: 12px;" onclick="resetData()">Reset Data</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- EXPENSES TAB -->
+        <div id="expenses-tab" class="tab-content">
+            <div class="grid-container">
+                <div class="panel">
+                    <div class="panel-title">Expenses Log</div>
+                    <div class="controls">
+                        <div class="input-group" style="flex: 2;">
+                            <label>Search description</label>
+                            <input type="text" id="search-input" placeholder="Search by name, description..." onkeyup="filterExpenses()">
+                        </div>
+                        <div class="input-group">
+                            <label>Payer</label>
+                            <select id="filter-payer" onchange="filterExpenses()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Month</label>
+                            <select id="filter-month" onchange="filterExpenses()">
+                                <option value="">All</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table id="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Paid By</th>
+                                <th style="text-align: right;">Amount (INR)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Add Expense</div>
+                    <form id="expense-form" onsubmit="handleAddExpenseSubmit(event)">
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Description</label>
+                            <input type="text" id="add-description" placeholder="Dinner, rent, etc." required>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Payer</label>
+                            <select id="add-payer" required></select>
+                        </div>
+                        <div class="controls" style="margin-bottom: 15px; gap: 10px;">
+                            <div class="input-group">
+                                <label>Amount</label>
+                                <input type="number" id="add-amount" placeholder="0.00" step="0.01" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Currency</label>
+                                <select id="add-currency" onchange="toggleExchangeRate()">
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group hidden" id="ex-rate-group" style="margin-bottom: 15px;">
+                            <label>Exchange Rate (USD to INR)</label>
+                            <input type="number" id="add-exchange-rate" value="82.5" step="0.1">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Date</label>
+                            <input type="date" id="add-date" required>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label>Split Type</label>
+                            <select id="add-split-type" onchange="renderSplitDetailsForm()">
+                                <option value="equal">Equal</option>
+                                <option value="percentage">Percentage</option>
+                                <option value="share">Share</option>
+                            </select>
+                        </div>
+                        <div id="split-details-container" style="margin-bottom: 20px;">
+                            <!-- Dynamically generated list of members with inputs based on split type -->
+                        </div>
+                        <button type="submit" style="width: 100%; padding: 12px;">Add Expense</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- BALANCES TAB -->
+        <div id="balances-tab" class="tab-content hidden">
+            <div class="grid-container">
+                <div class="panel">
+                    <div class="panel-title">Net Balance Summary (Aisha's view)</div>
+                    <div id="balances-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="divider"></div>
+                    <div class="panel-title" style="border: none; margin-bottom: 10px;">Settlement Path (Who pays whom)</div>
+                    <div id="settlements-list" style="line-height: 1.6;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Drilldown Ledger (Rohan's view)</div>
+                    <p style="color: #a1a1aa; font-size: 13px; margin-top: -10px; margin-bottom: 20px;">
+                        Select a member from the list to view their exact transaction breakdown.
+                    </p>
+                    <div id="drilldown-username" style="font-weight: 700; margin-bottom: 15px; color: #ffffff;">No member selected</div>
+                    <div id="drilldown-container" style="max-height: 400px; overflow-y: auto;">
+                        <table style="font-size: 12px;">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th style="text-align: right;">Amount (INR)</th>
+                                </tr>
+                              </thead>
+                              <tbody id="drilldown-tbody">
+                                  <tr>
+                                      <td colspan="3" style="text-align: center; color: #71717a;">Select a name from the left panel to inspect their detailed sheet ledger.</td>
+                                  </tr>
+                              </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMPORTER TAB -->
+        <div id="importer-tab" class="tab-content hidden">
+            <div class="panel" style="max-width: 800px; margin: 0 auto;">
+                <div class="panel-title">CSV Data Importer (Meera's Approval Module)</div>
+                <p style="color: #a1a1aa; font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
+                    Upload the raw <code>expenses_export.csv</code>. The system will detect issues, ask you to approve deletions, resolve conflicts, and apply appropriate member date range rules.
+                </p>
+
+                <div class="file-upload" onclick="document.getElementById('csv-file-input').click()">
+                    <span id="file-upload-label" style="color: #a1a1aa;">Drag and drop or click to upload <strong>expenses_export.csv</strong></span>
+                    <input type="file" id="csv-file-input" accept=".csv" onchange="handleCsvFileSelected(event)">
+                </div>
+
+                <div id="import-preview-section" class="hidden">
+                    <div class="panel-title" style="font-size: 16px; margin-top: 30px;">Validation & Anomalies Log</div>
+                    <div class="error-log" id="validation-errors-log">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div id="duplicates-section" class="hidden">
+                        <div class="panel-title" style="font-size: 16px; margin-top: 20px;">Duplicate Detection (Approval Needed)</div>
+                        <p style="color: #a1a1aa; font-size: 13px; margin-top: -10px; margin-bottom: 15px;">
+                            The following similar or duplicate entries were found. Uncheck to delete/merge them.
+                        </p>
+                        <div id="duplicates-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div id="conflicts-section" class="hidden" style="margin-top: 20px;">
+                        <div class="panel-title" style="font-size: 16px;">Conflicting Entries (Decision Needed)</div>
+                        <p style="color: #a1a1aa; font-size: 13px; margin-top: -10px; margin-bottom: 15px;">
+                            Multiple people logged similar expenses. Choose the correct transaction to keep.
+                        </p>
+                        <div id="conflicts-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button class="secondary" onclick="resetImporter()">Cancel</button>
+                        <button onclick="commitImport()">Import and Calculate Balances</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // --- DATA STATE ---
+        const DEFAULT_MEMBERS = [
+            { id: 1, name: "Aisha", email: "aisha@spreetail.com", joinDate: "2026-02-01", leaveDate: null },
+            { id: 2, name: "Rohan", email: "rohan@spreetail.com", joinDate: "2026-02-01", leaveDate: null },
+            { id: 3, name: "Priya", email: "priya@spreetail.com", joinDate: "2026-02-01", leaveDate: null },
+            { id: 4, name: "Meera", email: "meera@spreetail.com", joinDate: "2026-02-01", leaveDate: "2026-03-31" },
+            { id: 5, name: "Sam", email: "sam@spreetail.com", joinDate: "2026-04-15", leaveDate: null },
+            { id: 6, name: "Dev", email: "dev@spreetail.com", joinDate: "2026-02-08", leaveDate: "2026-03-15" }, // Joined for trip
+            { id: 7, name: "Kabir", email: "kabir@spreetail.com", joinDate: "2026-03-11", leaveDate: "2026-03-12" } // Join for 1 day
+        ];
+
+        let members = JSON.parse(localStorage.getItem("spreetail_members")) || [...DEFAULT_MEMBERS];
+        let expenses = JSON.parse(localStorage.getItem("spreetail_expenses")) || [];
+        let settlements = JSON.parse(localStorage.getItem("spreetail_settlements")) || [];
+
+        let currentImportData = null;
+
+        // --- INIT ---
+        window.addEventListener("DOMContentLoaded", () => {
+            initForms();
+            renderExpenses();
+            renderBalances();
+        });
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+            document.getElementById(tabId).classList.remove("hidden");
+
+            document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+            el.classList.add("active");
+        }
+
+        function initForms() {
+            // Populate Payer Select
+            const addPayer = document.getElementById("add-payer");
+            const filterPayer = document.getElementById("filter-payer");
+            addPayer.innerHTML = "";
+            filterPayer.innerHTML = '<option value="">All</option>';
+
+            members.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m.id;
+                opt.textContent = m.name;
+                addPayer.appendChild(opt);
+
+                const optFilter = document.createElement("option");
+                optFilter.value = m.name;
+                optFilter.textContent = m.name;
+                filterPayer.appendChild(optFilter);
+            });
+
+            // Set current date in Form
+            document.getElementById("add-date").value = new Date().toISOString().substring(0, 10);
+            renderSplitDetailsForm();
+        }
+
+        function toggleExchangeRate() {
+            const currency = document.getElementById("add-currency").value;
+            const exRateGroup = document.getElementById("ex-rate-group");
+            if (currency === "USD") {
+                exRateGroup.classList.remove("hidden");
+            } else {
+                exRateGroup.classList.add("hidden");
+            }
+        }
+
+        function renderSplitDetailsForm() {
+            const splitType = document.getElementById("add-split-type").value;
+            const container = document.getElementById("split-details-container");
+            container.innerHTML = "";
+
+            if (splitType === "equal") {
+                container.innerHTML = "<p style='font-size: 12px; color: #a1a1aa;'>Split equally among all selected participants.</p>";
+                return;
+            }
+
+            const label = document.createElement("label");
+            label.textContent = splitType === "percentage" ? "Percentage per member (%)" : "Shares / Fixed amount per member";
+            container.appendChild(label);
+
+            const list = document.createElement("div");
+            list.style.display = "flex";
+            list.style.flexDirection = "column";
+            list.style.gap = "8px";
+            list.style.marginTop = "5px";
+
+            members.forEach(m => {
+                const row = document.createElement("div");
+                row.style.display = "flex";
+                row.style.justifyContent = "space-between";
+                row.style.alignItems = "center";
+
+                const span = document.createElement("span");
+                span.textContent = m.name;
+                span.style.fontSize = "14px";
+
+                const input = document.createElement("input");
+                input.type = "number";
+                input.step = "any";
+                input.className = "split-value-input";
+                input.dataset.userid = m.id;
+                input.style.width = "80px";
+                input.placeholder = splitType === "percentage" ? "%" : "1";
+
+                row.appendChild(span);
+                row.appendChild(input);
+                list.appendChild(row);
+            });
+            container.appendChild(list);
+        }
+
+        // --- RENDER EXPENSES ---
+        function renderExpenses() {
+            const tbody = document.getElementById("expenses-tbody");
+            tbody.innerHTML = "";
+
+            if (expenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #71717a;">No expenses found.</td></tr>`;
+                return;
+            }
+
+            expenses.forEach((exp, idx) => {
+                const tr = document.createElement("tr");
+                tr.className = "clickable-row";
+                tr.onclick = () => showExpenseDetails(exp, idx);
+
+                const dateTd = document.createElement("td");
+                dateTd.textContent = exp.date;
+                dateTd.style.fontFamily = "monospace";
+                
+                const descTd = document.createElement("td");
+                descTd.innerHTML = `${exp.description} ${exp.notes ? `<br><small style="color: #71717a;">${exp.notes}</small>` : ""}`;
+                
+                const payerTd = document.createElement("td");
+                payerTd.textContent = exp.paidBy;
+
+                const amountTd = document.createElement("td");
+                amountTd.style.textAlign = "right";
+                amountTd.style.fontWeight = "500";
+                amountTd.textContent = `₹${parseFloat(exp.amountInINR).toFixed(2)}`;
+
+                tr.appendChild(dateTd);
+                tr.appendChild(descTd);
+                tr.appendChild(payerTd);
+                tr.appendChild(amountTd);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterExpenses() {
+            const query = document.getElementById("search-input").value.toLowerCase();
+            const payer = document.getElementById("filter-payer").value.toLowerCase();
+            const month = document.getElementById("filter-month").value;
+
+            const filtered = expenses.filter(exp => {
+                const matchesQuery = exp.description.toLowerCase().includes(query) || exp.paidBy.toLowerCase().includes(query);
+                const matchesPayer = !payer || exp.paidBy.toLowerCase() === payer;
+                
+                let matchesMonth = true;
+                if (month) {
+                    const parts = exp.date.split("-");
+                    if (parts.length === 3) {
+                        const m = parseInt(parts[1], 10);
+                        matchesMonth = m === parseInt(month, 10);
+                    }
+                }
+                return matchesQuery && matchesPayer && matchesMonth;
+            });
+
+            const tbody = document.getElementById("expenses-tbody");
+            tbody.innerHTML = "";
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #71717a;">No matching expenses found.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((exp, idx) => {
+                const tr = document.createElement("tr");
+                tr.className = "clickable-row";
+                tr.onclick = () => showExpenseDetails(exp, idx);
+
+                const dateTd = document.createElement("td");
+                dateTd.textContent = exp.date;
+                dateTd.style.fontFamily = "monospace";
+                
+                const descTd = document.createElement("td");
+                descTd.innerHTML = `${exp.description} ${exp.notes ? `<br><small style="color: #71717a;">${exp.notes}</small>` : ""}`;
+                
+                const payerTd = document.createElement("td");
+                payerTd.textContent = exp.paidBy;
+
+                const amountTd = document.createElement("td");
+                amountTd.style.textAlign = "right";
+                amountTd.style.fontWeight = "500";
+                amountTd.textContent = `₹${parseFloat(exp.amountInINR).toFixed(2)}`;
+
+                tr.appendChild(dateTd);
+                tr.appendChild(descTd);
+                tr.appendChild(payerTd);
+                tr.appendChild(amountTd);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showExpenseDetails(exp, index) {
+            // Remove previous detail row if any
+            const existingDetail = document.getElementById("expanded-detail-row");
+            if (existingDetail) {
+                const parent = existingDetail.parentNode;
+                parent.removeChild(existingDetail);
+                if (existingDetail.dataset.index == index) {
+                    return; // Toggle behavior: if same row clicked, just collapse
+                }
+            }
+
+            // Find rows
+            const rows = document.querySelectorAll("#expenses-tbody tr");
+            const targetRow = rows[index];
+
+            // Create detail row
+            const detailRow = document.createElement("tr");
+            detailRow.id = "expanded-detail-row";
+            detailRow.dataset.index = index;
+            detailRow.className = "detail-row";
+
+            const detailCell = document.createElement("td");
+            detailCell.colSpan = 4;
+            detailCell.className = "detail-cell";
+
+            // Calculation details
+            let splitDetailsHtml = "";
+            if (exp.splitType === "equal") {
+                const splitCost = (exp.amountInINR / exp.splitWith.length).toFixed(2);
+                splitDetailsHtml = exp.splitWith.map(name => `<li><span>${name}</span><span>₹${splitCost} (Equal)</span></li>`).join("");
+            } else {
+                // Parse split details and list
+                const details = exp.splitDetails.split(";").map(s => s.trim()).filter(Boolean);
+                splitDetailsHtml = details.map(d => {
+                    const parts = d.split(/\s+/);
+                    const val = parts.pop();
+                    const name = parts.join(" ");
+                    return `<li><span>${name}</span><span>${val}</span></li>`;
+                }).join("");
+            }
+
+            detailCell.innerHTML = `
+                <div class="detail-grid">
+                    <div>
+                        <div class="detail-section-title">Expense Details</div>
+                        <p><strong>Description:</strong> ${exp.description}</p>
+                        <p><strong>Original Cost:</strong> ${exp.amount} ${exp.currency}</p>
+                        <p><strong>Cost (INR):</strong> ₹${parseFloat(exp.amountInINR).toFixed(2)}</p>
+                        <p><strong>Split Type:</strong> <span class="badge">${exp.splitType}</span></p>
+                        ${exp.notes ? `<p><strong>Notes:</strong> ${exp.notes}</p>` : ""}
+                    </div>
+                    <div>
+                        <div class="detail-section-title">Split Breakdown</div>
+                        <ul class="detail-list">
+                            ${splitDetailsHtml}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            detailRow.appendChild(detailCell);
+            targetRow.after(detailRow);
+        }
+
+        // --- RENDER BALANCES ---
+        function calculateBalances() {
+            const netBalances = {};
+            members.forEach(m => {
+                netBalances[m.name] = 0;
+            });
+
+            // Process expenses
+            expenses.forEach(exp => {
+                const payer = exp.paidBy;
+                const totalAmount = parseFloat(exp.amountInINR);
+                if (exp.splitType === "settlement") {
+                    // It is a settlement: payer gets positive credit, receiver gets negative debit
+                    const receiver = exp.splitWith[0];
+                    if (netBalances[payer] !== undefined) netBalances[payer] += totalAmount;
+                    if (netBalances[receiver] !== undefined) netBalances[receiver] -= totalAmount;
+                } else if (exp.splitType === "equal") {
+                    const share = totalAmount / exp.splitWith.length;
+                    if (netBalances[payer] !== undefined) netBalances[payer] += totalAmount;
+                    exp.splitWith.forEach(member => {
+                        if (netBalances[member] !== undefined) {
+                            netBalances[member] -= share;
+                        }
+                    });
+                } else if (exp.splitType === "percentage") {
+                    if (netBalances[payer] !== undefined) netBalances[payer] += totalAmount;
+                    const details = exp.splitDetails.split(";").map(s => s.trim()).filter(Boolean);
+                    details.forEach(d => {
+                        const match = d.match(/^([^\d%]+)\s+(\d+(?:\.\d+)?)\s*%/);
+                        if (match) {
+                            const name = match[1].trim();
+                            const pct = parseFloat(match[2]);
+                            const share = (totalAmount * pct) / 100;
+                            if (netBalances[name] !== undefined) {
+                                netBalances[name] -= share;
+                            }
+                        }
+                    });
+                } else if (exp.splitType === "share" || exp.splitType === "unequal") {
+                    if (netBalances[payer] !== undefined) netBalances[payer] += totalAmount;
+                    const details = exp.splitDetails.split(";").map(s => s.trim()).filter(Boolean);
+                    let totalShares = 0;
+                    const sharesMap = {};
+
+                    details.forEach((d) => {
+                        const parts = d.split(/\s+/);
+                        const val = parseFloat(parts.pop() || "0");
+                        const name = parts.join(" ").trim();
+                        sharesMap[name] = val;
+                        totalShares += val;
+                    });
+
+                    if (exp.splitType === "share") {
+                        exp.splitWith.forEach((member) => {
+                            const coeff = sharesMap[member] || 1;
+                            const share = (totalAmount * coeff) / (totalShares || 1);
+                            if (netBalances[member] !== undefined) {
+                                netBalances[member] -= share;
+                            }
+                        });
+                    } else {
+                        exp.splitWith.forEach((member) => {
+                            const amt = sharesMap[member] || 0;
+                            if (netBalances[member] !== undefined) {
+                                netBalances[member] -= amt;
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Process separate settlements
+            settlements.forEach(set => {
+                const from = set.fromUser;
+                const to = set.toUser;
+                const amt = parseFloat(set.amount);
+                if (netBalances[from] !== undefined) netBalances[from] += amt;
+                if (netBalances[to] !== undefined) netBalances[to] -= amt;
+            });
+
+            return netBalances;
+        }
+
+        function renderBalances() {
+            const netBalances = calculateBalances();
+            const listDiv = document.getElementById("balances-list");
+            listDiv.innerHTML = "";
+
+            Object.entries(netBalances).forEach(([name, balance]) => {
+                const roundedBal = Math.round(balance * 100) / 100;
+                let classText = "gray";
+                let text = "Settled up";
+                if (roundedBal > 0.01) {
+                    classText = "positive";
+                    text = `is owed ₹${roundedBal.toFixed(2)}`;
+                } else if (roundedBal < -0.01) {
+                    classText = "negative";
+                    text = `owes ₹${Math.abs(roundedBal).toFixed(2)}`;
+                }
+
+                const div = document.createElement("div");
+                div.className = "balance-item";
+                div.style.cursor = "pointer";
+                div.onclick = () => showDrilldownLedger(name);
+                div.innerHTML = `
+                    <span class="balance-name">${name}</span>
+                    <span class="balance-val ${classText}">${text}</span>
+                `;
+                listDiv.appendChild(div);
+            });
+
+            // Compute & Render Settlement Paths (Greedy Min-Cash-Flow)
+            renderSettlementPaths(netBalances);
+        }
+
+        function renderSettlementPaths(netBalances) {
+            const debtors = [];
+            const creditors = [];
+
+            Object.entries(netBalances).forEach(([name, bal]) => {
+                const val = Math.round(bal * 100) / 100;
+                if (val < -0.01) {
+                    debtors.push({ name, amount: -val });
+                } else if (val > 0.01) {
+                    creditors.push({ name, amount: val });
+                }
+            });
+
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+
+            const settlementsListDiv = document.getElementById("settlements-list");
+            settlementsListDiv.innerHTML = "";
+
+            if (debtors.length === 0 && creditors.length === 0) {
+                settlementsListDiv.innerHTML = "<p style='color: #10b981; font-weight: 500;'>All debts settled! No payments needed.</p>";
+                return;
+            }
+
+            let d = 0;
+            let c = 0;
+            while (d < debtors.length && c < creditors.length) {
+                const debtor = debtors[d];
+                const creditor = creditors[c];
+                const settleAmount = Math.min(debtor.amount, creditor.amount);
+
+                const div = document.createElement("div");
+                div.style.marginBottom = "8px";
+                div.innerHTML = `<strong>${debtor.name}</strong> pays <strong class="positive">₹${settleAmount.toFixed(2)}</strong> to <strong>${creditor.name}</strong>`;
+                settlementsListDiv.appendChild(div);
+
+                debtor.amount -= settleAmount;
+                creditor.amount -= settleAmount;
+
+                if (debtor.amount < 0.01) d++;
+                if (creditor.amount < 0.01) c++;
+            }
+        }
+
+        function showDrilldownLedger(name) {
+            document.getElementById("drilldown-username").textContent = `Ledger for ${name}`;
+            const tbody = document.getElementById("drilldown-tbody");
+            tbody.innerHTML = "";
+
+            let personalRows = [];
+
+            // Gather all items where name is payer or participant
+            expenses.forEach(exp => {
+                const amt = parseFloat(exp.amountInINR);
+                if (exp.paidBy === name) {
+                    personalRows.push({
+                        date: exp.date,
+                        description: `Paid for: ${exp.description}`,
+                        amount: amt,
+                        isCredit: true
+                    });
+                }
+                
+                if (exp.splitType === "equal" && exp.splitWith.includes(name)) {
+                    personalRows.push({
+                        date: exp.date,
+                        description: `Share of: ${exp.description}`,
+                        amount: -(amt / exp.splitWith.length),
+                        isCredit: false
+                    });
+                } else if (exp.splitType === "percentage" && exp.splitWith.includes(name)) {
+                    const details = exp.splitDetails.split(";").map(s => s.trim()).filter(Boolean);
+                    details.forEach(d => {
+                        const match = d.match(/^([^\d%]+)\s+(\d+(?:\.\d+)?)\s*%/);
+                        if (match && match[1].trim() === name) {
+                            const pct = parseFloat(match[2]);
+                            personalRows.push({
+                                date: exp.date,
+                                description: `Share of: ${exp.description}`,
+                                amount: -((amt * pct) / 100),
+                                isCredit: false
+                              });
+                        }
+                    });
+                } else if ((exp.splitType === "share" || exp.splitType === "unequal") && exp.splitWith.includes(name)) {
+                    const details = exp.splitDetails.split(";").map(s => s.trim()).filter(Boolean);
+                    let totalShares = 0;
+                    const sharesMap = {};
+
+                    details.forEach((d) => {
+                        const parts = d.split(/\s+/);
+                        const val = parseFloat(parts.pop() || "0");
+                        const n = parts.join(" ").trim();
+                        sharesMap[n] = val;
+                        totalShares += val;
+                    });
+
+                    if (exp.splitType === "share") {
+                        const coeff = sharesMap[name] || 1;
+                        personalRows.push({
+                            date: exp.date,
+                            description: `Share of: ${exp.description}`,
+                            amount: -((amt * coeff) / (totalShares || 1)),
+                            isCredit: false
+                        });
+                    } else {
+                        const amount = sharesMap[name] || 0;
+                        personalRows.push({
+                            date: exp.date,
+                            description: `Share of: ${exp.description}`,
+                            amount: -amount,
+                            isCredit: false
+                        });
+                    }
+                }
+            });
+
+            // Gather direct settlements
+            settlements.forEach(set => {
+                const amt = parseFloat(set.amount);
+                if (set.fromUser === name) {
+                    personalRows.push({
+                        date: "Settlement",
+                        description: `Paid settlement to ${set.toUser}`,
+                        amount: amt,
+                        isCredit: true
+                    });
+                }
+                if (set.toUser === name) {
+                    personalRows.push({
+                        date: "Settlement",
+                        description: `Received settlement from ${set.fromUser}`,
+                        amount: -amt,
+                        isCredit: false
+                    });
+                }
+            });
+
+            // Sort by date (mock sort)
+            personalRows.sort((a, b) => a.date.localeCompare(b.date));
+
+            personalRows.forEach(row => {
+                const tr = document.createElement("tr");
+
+                const dateTd = document.createElement("td");
+                dateTd.textContent = row.date;
+                dateTd.style.fontFamily = "monospace";
+
+                const descTd = document.createElement("td");
+                descTd.textContent = row.description;
+
+                const amtTd = document.createElement("td");
+                amtTd.style.textAlign = "right";
+                amtTd.style.fontWeight = "500";
+                
+                const rounded = Math.round(row.amount * 100) / 100;
+                if (rounded >= 0) {
+                    amtTd.className = "positive";
+                    amtTd.textContent = `+₹${rounded.toFixed(2)}`;
+                } else {
+                    amtTd.className = "negative";
+                    amtTd.textContent = `-₹${Math.abs(rounded).toFixed(2)}`;
+                }
+
+                tr.appendChild(dateTd);
+                tr.appendChild(descTd);
+                tr.appendChild(amtTd);
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- SUBMIT EXPENSE ---
+        function handleAddExpenseSubmit(e) {
+            e.preventDefault();
+            const desc = document.getElementById("add-description").value;
+            const payerIdVal = document.getElementById("add-payer").value;
+            const payer = members.find(m => m.id == payerIdVal).name;
+            const amtVal = parseFloat(document.getElementById("add-amount").value);
+            const currency = document.getElementById("add-currency").value;
+            const date = document.getElementById("add-date").value;
+            const splitType = document.getElementById("add-split-type").value;
+
+            // Formulate date into DD-MM-YYYY
+            const dateObj = new Date(date);
+            const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${dateObj.getFullYear()}`;
+
+            let amountInINR = amtVal;
+            if (currency === "USD") {
+                const rate = parseFloat(document.getElementById("add-exchange-rate").value) || 82.5;
+                amountInINR = amtVal * rate;
+            }
+
+            // Figure out split targets (default all active members)
+            const splitWith = members.filter(m => {
+                // filter by join/leave dates
+                const checkTime = dateObj.getTime();
+                const joinTime = new Date(m.joinDate).getTime();
+                const leaveTime = m.leaveDate ? new Date(m.leaveDate).getTime() : Infinity;
+                return checkTime >= joinTime && checkTime <= leaveTime;
+            }).map(m => m.name);
+
+            let splitDetailsStr = "";
+            if (splitType !== "equal") {
+                const inputs = document.querySelectorAll(".split-value-input");
+                const detailsArr = [];
+                inputs.forEach(input => {
+                    const uId = input.dataset.userid;
+                    const val = input.value || "1";
+                    const uName = members.find(m => m.id == uId).name;
+                    if (splitWith.includes(uName)) {
+                        detailsArr.push(`${uName} ${val}${splitType === "percentage" ? "%" : ""}`);
+                    }
+                });
+                splitDetailsStr = detailsArr.join("; ");
+            }
+
+            const newExp = {
+                date: formattedDate,
+                description: desc,
+                paidBy: payer,
+                amount: amtVal,
+                currency,
+                amountInINR: amountInINR,
+                splitType,
+                splitWith,
+                splitDetails: splitDetailsStr,
+                notes: ""
+            };
+
+            expenses.push(newExp);
+            localStorage.setItem("spreetail_expenses", JSON.stringify(expenses));
+            
+            // reset form
+            document.getElementById("add-description").value = "";
+            document.getElementById("add-amount").value = "";
+            initForms();
+            renderExpenses();
+            renderBalances();
+            showToast("Expense added successfully!");
+        }
+
+        // --- IMPORTER ACTIONS ---
+        function handleCsvFileSelected(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById("file-upload-label").innerHTML = `Selected: <strong>${file.name}</strong>`;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                processCSVData(text);
+            };
+            reader.readAsText(file);
+        }
+
+        function processCSVData(csvText) {
+            // Very simple CSV parser to handle quotes and commas properly
+            const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
+            if (lines.length < 2) {
+                alert("Invalid or empty CSV.");
+                return;
+              }
+              const headers = lines[0].split("\t").map(h => h.trim().toLowerCase());
+              // fallback to comma if no tab
+              const isTab = lines[0].includes("\t");
+              const delimiter = isTab ? "\t" : ",";
+              
+              const rows = [];
+              const rawHeaders = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+
+              for (let i = 1; i < lines.length; i++) {
+                  // A robust regex split to handle fields enclosed in quotes
+                  const line = lines[i];
+                  const entry = [];
+                  let insideQuote = false;
+                  let entryPart = "";
+                  for (let c = 0; c < line.length; c++) {
+                      const char = line[c];
+                      if (char === '"') {
+                          insideQuote = !insideQuote;
+                      } else if (char === delimiter && !insideQuote) {
+                          entry.push(entryPart.trim());
+                          entryPart = "";
+                      } else {
+                          entryPart += char;
+                      }
+                  }
+                  entry.push(entryPart.trim());
+
+                  if (entry.length >= rawHeaders.length) {
+                      const rowObj = {};
+                      rawHeaders.forEach((h, index) => {
+                          rowObj[h] = entry[index] || "";
+                      });
+                      rows.push(rowObj);
+                  }
+              }
+
+              // Run the same validation logic client side
+              const issues = [];
+              const sanitizedRows = [];
+              const duplicates = [];
+              const conflicts = [];
+              const seenRows = new Map();
+
+              const memberNameMap = {
+                  "aisha": "Aisha", "rohan": "Rohan", "priya": "Priya",
+                  "meera": "Meera", "sam": "Sam", "dev": "Dev", "kabir": "Kabir", "priya s": "Priya"
+              };
+
+              const getNormalizedName = (name) => {
+                  const normalized = name.trim().toLowerCase();
+                  return memberNameMap[normalized] || name;
+              };
+
+              rows.forEach((row, index) => {
+                  const rowNum = index + 2;
+                  const issuesForRow = [];
+
+                  // Payer
+                  let paidBy = row.paid_by ? row.paid_by.trim() : "";
+                  let payerNormalized = "Unknown";
+                  if (!paidBy) {
+                      issuesForRow.push("Payer is missing.");
+                  } else {
+                      payerNormalized = getNormalizedName(paidBy);
+                      if (paidBy !== payerNormalized) {
+                          issuesForRow.push(`Payer '${paidBy}' normalized to '${payerNormalized}'.`);
+                      }
+                  }
+
+                  // Amount
+                  let amountStr = row.amount ? row.amount.replace(/,/g, "").trim() : "";
+                  let rawAmount = parseFloat(amountStr);
+                  let parsedAmount = rawAmount;
+                  let currency = row.currency ? row.currency.trim().toUpperCase() : "INR";
+
+                  if (isNaN(rawAmount)) {
+                      issuesForRow.push(`Amount '${row.amount}' is invalid.`);
+                      parsedAmount = 0;
+                  } else if (rawAmount === 0) {
+                      issuesForRow.push("Amount is zero (0).");
+                  } else if (rawAmount < 0) {
+                      issuesForRow.push(`Negative amount (${rawAmount}) treated as a refund/credit.`);
+                  }
+
+                  // Currency
+                  if (!row.currency) {
+                      issuesForRow.push("Currency missing. Defaulted to INR.");
+                      currency = "INR";
+                  }
+
+                  let amountInINR = parsedAmount;
+                  if (currency === "USD") {
+                      amountInINR = parsedAmount * 82.5;
+                      issuesForRow.push(`Converted ${parsedAmount} USD to ${amountInINR.toFixed(2)} INR (Rate: 82.5).`);
+                  }
+
+                  // Date
+                  let dateStr = row.date ? row.date.trim() : "";
+                  let parsedDate = null;
+                  let formattedDate = "";
+
+                  if (!dateStr) {
+                      issuesForRow.push("Date missing.");
+                  } else {
+                      if (dateStr.toLowerCase() === "mar-14") {
+                          parsedDate = new Date("2026-03-14");
+                          formattedDate = "14-03-2026";
+                          issuesForRow.push(`Date format '${dateStr}' parsed as 14-03-2026.`);
+                      } else {
+                          const parts = dateStr.split(/[-/]/);
+                          if (parts.length === 3) {
+                              const day = parseInt(parts[0], 10);
+                              const monthStr = parts[1];
+                              const year = parseInt(parts[2], 10);
+                              let month = parseInt(monthStr, 10);
+                              if (isNaN(month)) {
+                                  const months = {
+                                      jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12
+                                  };
+                                  month = months[monthStr.toLowerCase().slice(0, 3)] || 0;
+                              }
+                              if (day > 0 && day <= 31 && month > 0 && month <= 12) {
+                                  parsedDate = new Date(year, month - 1, day);
+                                  formattedDate = `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`;
+                              }
+                          }
+                      }
+                  }
+
+                  if (!parsedDate || isNaN(parsedDate.getTime())) {
+                      issuesForRow.push(`Invalid date: '${row.date}'.`);
+                      parsedDate = new Date();
+                      formattedDate = "01-01-2026";
+                  }
+
+                  // Settlement detection
+                  const desc = row.description ? row.description.trim() : "";
+                  const descLower = desc.toLowerCase();
+                  const isSettlement = descLower.includes("paid back") || descLower.includes("settlement") || descLower.includes("repaid");
+
+                  if (isSettlement) {
+                      issuesForRow.push("Treated as debt settlement.");
+                  }
+
+                  // Split with
+                  const splitWithRaw = row.split_with ? row.split_with.split(";").map(s => s.trim()).filter(Boolean) : [];
+                  const splitWith = splitWithRaw.map(getNormalizedName);
+
+                  // Validate membership times
+                  if (parsedDate) {
+                      const checkTime = parsedDate.getTime();
+                      const meeraLeaveTime = new Date("2026-03-31").getTime();
+                      const samJoinTime = new Date("2026-04-15").getTime();
+
+                      splitWith.forEach(member => {
+                          if (member === "Meera" && checkTime > meeraLeaveTime) {
+                              issuesForRow.push(`Meera selected after she moved out. Removed her.`);
+                          }
+                          if (member === "Sam" && checkTime < samJoinTime) {
+                              issuesForRow.push(`Sam selected before he moved in. Removed him.`);
+                          }
+                      });
+                  }
+
+                  const activeSplitWith = splitWith.filter(member => {
+                      if (!parsedDate) return true;
+                      const checkTime = parsedDate.getTime();
+                      if (member === "Meera" && checkTime > new Date("2026-03-31").getTime()) return false;
+                      if (member === "Sam" && checkTime < new Date("2026-04-15").getTime()) return false;
+                      return true;
+                  });
+
+                  // Check percentages total
+                  const splitType = isSettlement ? "settlement" : (row.split_type ? row.split_type.trim().toLowerCase() : "equal");
+                  let splitDetailsStr = row.split_details ? row.split_details.trim() : "";
+
+                  if (splitType === "percentage") {
+                      const details = splitDetailsStr.split(";").map(s => s.trim()).filter(Boolean);
+                      let totalPct = 0;
+                      details.forEach(d => {
+                          const match = d.match(/(\d+(?:\.\d+)?)\s*%/);
+                          if (match) totalPct += parseFloat(match[1]);
+                      });
+                      if (Math.abs(totalPct - 100) > 0.5) {
+                          issuesForRow.push(`Percentage sum is ${totalPct}% instead of 100%.`);
+                      }
+                  }
+
+                  const finalRow = {
+                      rowNumber: rowNum,
+                      date: formattedDate,
+                      description: desc,
+                      paidBy: payerNormalized,
+                      amount: parsedAmount,
+                      currency,
+                      amountInINR,
+                      splitType,
+                      splitWith: activeSplitWith,
+                      splitDetails: splitDetailsStr,
+                      notes: row.notes || "",
+                      isSettlement
+                  };
+
+                  sanitizedRows.push(finalRow);
+
+                  if (issuesForRow.length > 0) {
+                      issues.push({
+                          rowNumber: rowNum,
+                          description: desc,
+                          issues: issuesForRow
+                      });
+                  }
+              });
+
+              // Find duplicates
+              sanitizedRows.forEach(row => {
+                  const key = `${row.date}_${row.description.toLowerCase().replace(/[^a-z0-9]/g, "")}_${row.amountInINR}_${row.paidBy}`;
+                  if (seenRows.has(key)) {
+                      const prev = seenRows.get(key);
+                      duplicates.push({
+                          row1: prev,
+                          row2: row,
+                          message: `Duplicate of Row ${prev.rowNumber}: "${row.description}" for ₹${row.amountInINR}`
+                      });
+                  } else {
+                      seenRows.set(key, row);
+                  }
+              });
+
+              // Find conflicts
+              for (let i = 0; i < sanitizedRows.length; i++) {
+                  for (let j = i + 1; j < sanitizedRows.length; j++) {
+                      const r1 = sanitizedRows[i];
+                      const r2 = sanitizedRows[j];
+                      if (r1.date === r2.date && (r1.description.toLowerCase().includes(r2.description.toLowerCase()) || r2.description.toLowerCase().includes(r1.description.toLowerCase()))) {
+                          if (r1.amountInINR !== r2.amountInINR || r1.paidBy !== r2.paidBy) {
+                              conflicts.push({
+                                  row1: r1,
+                                  row2: r2,
+                                  message: `Conflict: "${r1.description}" by ${r1.paidBy} vs "${r2.description}" by ${r2.paidBy}`
+                              });
+                          }
+                      }
+                  }
+              }
+
+              currentImportData = {
+                  sanitizedRows,
+                  issues,
+                  duplicates,
+                  conflicts
+              };
+
+              renderImportResults();
+        }
+
+        function renderImportResults() {
+            document.getElementById("import-preview-section").classList.remove("hidden");
+
+            // Render logs
+            const logsDiv = document.getElementById("validation-errors-log");
+            logsDiv.innerHTML = "";
+            currentImportData.issues.forEach(i => {
+                const div = document.createElement("div");
+                div.className = "error-log-item";
+                div.innerHTML = `<strong>Row ${i.rowNumber} (${i.description}):</strong><br>` + i.issues.map(iss => ` &bull; ${iss}`).join("<br>");
+                logsDiv.appendChild(div);
+            });
+
+            // Render duplicates (Meera's Approval)
+            const dupSection = document.getElementById("duplicates-section");
+            const dupContainer = document.getElementById("duplicates-container");
+            dupContainer.innerHTML = "";
+            if (currentImportData.duplicates.length > 0) {
+                dupSection.classList.remove("hidden");
+                currentImportData.duplicates.forEach((dup, idx) => {
+                    const div = document.createElement("div");
+                    div.style.marginBottom = "10px";
+                    div.innerHTML = `
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="dup-${dup.row2.rowNumber}" checked>
+                            <span>Resolve: Discard Row ${dup.row2.rowNumber} (${dup.row2.description} - ₹${dup.row2.amountInINR}) to keep Row ${dup.row1.rowNumber}</span>
+                        </label>
+                    `;
+                    dupContainer.appendChild(div);
+                });
+            } else {
+                dupSection.classList.add("hidden");
+            }
+
+            // Render conflicts (Meera's / Rohan's Approval)
+            const confSection = document.getElementById("conflicts-section");
+            const confContainer = document.getElementById("conflicts-container");
+            confContainer.innerHTML = "";
+            if (currentImportData.conflicts.length > 0) {
+                confSection.classList.remove("hidden");
+                currentImportData.conflicts.forEach((conf, idx) => {
+                    const div = document.createElement("div");
+                    div.className = "conflict-box";
+                    div.innerHTML = `
+                        <p><strong>Conflict:</strong> ${conf.message}</p>
+                        <label style="margin-right: 15px;">
+                            <input type="radio" name="conf-choice-${idx}" value="row1" checked> Keep Row ${conf.row1.rowNumber} (₹${conf.row1.amountInINR})
+                        </label>
+                        <label>
+                            <input type="radio" name="conf-choice-${idx}" value="row2"> Keep Row ${conf.row2.rowNumber} (₹${conf.row2.amountInINR})
+                        </label>
+                    `;
+                    confContainer.appendChild(div);
+                });
+            } else {
+                confSection.classList.add("hidden");
+            }
+        }
+
+        function resetImporter() {
+            document.getElementById("import-preview-section").classList.add("hidden");
+            document.getElementById("csv-file-input").value = "";
+            document.getElementById("file-upload-label").innerHTML = "Drag and drop or click to upload <strong>expenses_export.csv</strong>";
+            currentImportData = null;
+        }
+
+        function commitImport() {
+            if (!currentImportData) return;
+
+            const finalRows = [];
+            const discardedRows = new Set();
+
+            // Check duplicate selections
+            currentImportData.duplicates.forEach(dup => {
+                const checkbox = document.getElementById(`dup-${dup.row2.rowNumber}`);
+                if (checkbox && checkbox.checked) {
+                    discardedRows.add(dup.row2.rowNumber);
+                }
+            });
+
+            // Check conflict selections
+            currentImportData.conflicts.forEach((conf, idx) => {
+                const choice = document.querySelector(`input[name="conf-choice-${idx}"]:checked`).value;
+                if (choice === "row1") {
+                    discardedRows.add(conf.row2.rowNumber);
+                } else if (choice === "row2") {
+                    discardedRows.add(conf.row1.rowNumber);
+                }
+            });
+
+            currentImportData.sanitizedRows.forEach(row => {
+                if (!discardedRows.has(row.rowNumber)) {
+                    finalRows.push(row);
+                }
+            });
+
+            // Save to LocalStorage/DB
+            expenses = finalRows;
+            localStorage.setItem("spreetail_expenses", JSON.stringify(expenses));
+            
+            // Also call API endpoint for database persistence if we wish, or fallback to client storage.
+            // Under normal production, we call the API. Here we also send it to the backend to persist in Neon DB.
+            fetch(`/api/import/confirm`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupId: 1, rows: finalRows })
+            }).then(res => {
+                if (res.ok) {
+                    showToast("Database and local storage updated successfully!");
+                }
+            }).catch(err => console.error("Database sync failed, fell back to local storage.", err));
+
+            showToast("Import successful! Balances updated.");
+            renderExpenses();
+            renderBalances();
+            switchTab("expenses-tab", document.querySelector(".nav-links a"));
+            resetImporter();
+        }
+
+        function resetData() {
+            localStorage.removeItem("spreetail_expenses");
+            localStorage.removeItem("spreetail_settlements");
+            expenses = [];
+            settlements = [];
+            renderExpenses();
+            renderBalances();
+            showToast("Data reset completed.");
+        }
+    </script>
+</body>
+</html>
